@@ -1,17 +1,13 @@
 package kuit.server.service;
 
-import kuit.server.common.exception.UserException;
-import kuit.server.controller.validator.PostMemberRequestValidator;
 import kuit.server.dao.MemberDao;
-import kuit.server.dao.UserDao;
 import kuit.server.domain.Member;
+import kuit.server.dto.member.response.GetMembersResponse;
 import kuit.server.dto.member.request.PostLoginRequest;
 import kuit.server.dto.member.request.PostMemberRequest;
 import kuit.server.dto.member.response.GetMemberResponse;
 import kuit.server.dto.member.response.PostLoginResponse;
 import kuit.server.dto.member.response.PostMemberResponse;
-import kuit.server.dto.user.PostUserRequest;
-import kuit.server.dto.user.PostUserResponse;
 import kuit.server.util.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static kuit.server.common.response.status.BaseExceptionResponseStatus.DUPLICATE_EMAIL;
-import static kuit.server.common.response.status.BaseExceptionResponseStatus.DUPLICATE_NICKNAME;
 
 @Slf4j
 @Service
@@ -70,16 +63,22 @@ public class MemberService {
         return "fail";
     }
 
-    public List<Member> findAll(){
+    public List<Member> findAll(long memberId,int size){
         log.info("[MemberService.findAll]");
-        return memberDao.findAll();
+        return memberDao.findAll(memberId,size);
     }
 
-    public List<GetMemberResponse>findMemberResponses(){
+    public List<GetMemberResponse>findMemberResponses(long memberId,int size){
         log.info("[MemberService.findMemberResponses]");
-        return findAll().stream()
+        return findAll(memberId,size).stream()
                 .map(GetMemberResponse::of)
                 .collect(Collectors.toList());
+    }
+    public GetMembersResponse findMembersResponse(long memberId, int size){
+        List<GetMemberResponse> memberResponses = findMemberResponses(memberId, size);
+        return GetMembersResponse.builder()
+                .memberResponses(memberResponses)
+                .build();
     }
 
     public String deleteById(Long id){

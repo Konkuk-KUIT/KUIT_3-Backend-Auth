@@ -43,9 +43,12 @@ public class MemberDao {
     /**
      * 유저 전부 조회
      **/
-    public List<Member> findAll() {
-        String sql = "select member_id, name, nickname, password, phone_num, email from member";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Member(
+    public List<Member> findAll(long memberId, int size) {
+        String sql = "select member_id, name, nickname, password, phone_num, email from member where member_id >=:member_id limit :size";
+        Map<String, Object> param = Map.of(
+                "member_id", memberId,
+                "size", size);
+        return jdbcTemplate.query(sql, param, (rs, rowNum) -> new Member(
                 Long.parseLong(rs.getString("member_id")),
                 rs.getString("name"),
                 rs.getString("nickname"),
@@ -94,11 +97,11 @@ public class MemberDao {
                 "email=:email " +
                 "where member_id=:member_id";
         Map<String, Object> param = Map.of(
-                "name",member.getName(),
+                "name", member.getName(),
                 "nickname", member.getNickname(),
-                "password",member.getPassword(),
-                "phone_num",member.getPhoneNum(),
-                "email",member.getEmail(),
+                "password", member.getPassword(),
+                "phone_num", member.getPhoneNum(),
+                "email", member.getEmail(),
                 "member_id", member.getMemberId());
         return jdbcTemplate.update(sql, param);
     }

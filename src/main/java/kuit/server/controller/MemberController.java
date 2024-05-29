@@ -6,6 +6,7 @@ import kuit.server.controller.validator.PostMemberRequestValidator;
 import kuit.server.dto.member.request.PostLoginRequest;
 import kuit.server.dto.member.response.GetMemberResponse;
 import kuit.server.dto.member.request.PostMemberRequest;
+import kuit.server.dto.member.response.GetMembersResponse;
 import kuit.server.dto.member.response.PostLoginResponse;
 import kuit.server.dto.member.response.PostMemberResponse;
 import kuit.server.dto.user.PatchNicknameRequest;
@@ -38,7 +39,7 @@ public class MemberController {
      * 로그인
      */
     @PostMapping("/login")
-    public BaseResponse<PostLoginResponse>login(@Validated @RequestBody PostLoginRequest postLoginRequest, BindingResult bindingResult){
+    public BaseResponse<PostLoginResponse> login(@Validated @RequestBody PostLoginRequest postLoginRequest, BindingResult bindingResult) {
         log.info("[MemberController.login]");
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
@@ -74,9 +75,9 @@ public class MemberController {
      * 회원 닉네임 변경
      **/
     @PatchMapping("/{memberId}/nickname")
-    public BaseResponse<String> changeNickname(@RequestBody Map<String,String> requestMap, @PathVariable Long memberId) {
+    public BaseResponse<String> changeNickname(@RequestBody Map<String, String> requestMap, @PathVariable Long memberId) {
         log.info("[MemberController.changeNickname]");
-        return new BaseResponse<>(memberService.changeNickname(memberId,requestMap.get("nickname")));
+        return new BaseResponse<>(memberService.changeNickname(memberId, requestMap.get("nickname")));
 
     }
 
@@ -86,16 +87,18 @@ public class MemberController {
     @PutMapping("/{memberId}")
     public BaseResponse<String> changeAll(@RequestBody PostMemberRequest postMemberRequest, @PathVariable Long memberId) {
         log.info("[MemberController.change]");
-        return new BaseResponse<>(memberService.changeAll(memberId,postMemberRequest));
+        return new BaseResponse<>(memberService.changeAll(memberId, postMemberRequest));
     }
 
     /**
      * 회원 전부 조회
      */
     @GetMapping()
-    public BaseResponse<List<GetMemberResponse>> getUsers() {
+    public BaseResponse<GetMembersResponse> getUsers(
+            @RequestParam(value = "member_id", defaultValue = "1") long memberId,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[MemberController.getUserById]");
-        return new BaseResponse<>(memberService.findMemberResponses());
+        return new BaseResponse<>(memberService.findMembersResponse(memberId, size));
 
     }
 
