@@ -68,38 +68,38 @@ public class UserDao {
     }
 
     public long getUserIdByEmail(String email) {
-        String sql = "select user_id from user where email=:email and status='active'";
+        String sql = "select id from user where email=:email and status='active'";
         Map<String, Object> param = Map.of("email", email);
         return jdbcTemplate.queryForObject(sql, param, long.class);
     }
 
     public String getPasswordByUserId(long userId) {
-        String sql = "select password from user where user_id=:user_id and status='active'";
-        Map<String, Object> param = Map.of("user_id", userId);
+        String sql = "select password from user where id=:id and status='active'";
+        Map<String, Object> param = Map.of("id", userId);
         return jdbcTemplate.queryForObject(sql, param, String.class);
     }
 
     public int modifyUserStatus_dormant(long userId) {
-        String sql = "update user set status=:status where user_id=:user_id";
+        String sql = "update user set status=:status where id=:id";
         Map<String, Object> param = Map.of(
                 "status", "dormant",
-                "user_id", userId);
+                "id", userId);
         return jdbcTemplate.update(sql, param);
     }
 
     public int modifyUserStatus_deleted(long userId) {
-        String sql = "update user set status=:status where user_id=:user_id";
+        String sql = "update user set status=:status where id=:id";
         Map<String, Object> param = Map.of(
                 "status", "deleted",
-                "user_id", userId);
+                "id", userId);
         return jdbcTemplate.update(sql, param);
     }
 
     public int modifyNickname(long userId, String nickname) {
-        String sql = "update user set nickname=:nickname where user_id=:user_id";
+        String sql = "update user set nickname=:nickname where id=:id";
         Map<String, Object> param = Map.of(
                 "nickname", nickname,
-                "user_id", userId);
+                "id", userId);
         return jdbcTemplate.update(sql, param);
     }
 }

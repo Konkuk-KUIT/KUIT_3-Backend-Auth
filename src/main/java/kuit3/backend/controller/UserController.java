@@ -1,6 +1,9 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.PreAuthorize;
 import kuit3.backend.common.exception.UserException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
 import kuit3.backend.service.UserService;
@@ -12,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_STATUS;
-import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
+import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.*;
 import static kuit3.backend.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
@@ -39,7 +41,10 @@ public class UserController {
      * 회원 휴면
      */
     @PatchMapping("/{userId}/dormant")
-    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId) {
+    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId, @PreAuthorize Long jwtId) {
+        if(userId != jwtId) {
+            throw new JwtUnauthorizedTokenException(TOKEN_MISMATCH);
+        }
         userService.modifyUserStatus_dormant(userId);
         return new BaseResponse<>(null);
     }
