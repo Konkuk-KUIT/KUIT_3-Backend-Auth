@@ -84,4 +84,13 @@ public class UserService {
             throw new UserException(DUPLICATE_NICKNAME);
         }
     }
+
+
+    public List<UserOrdersResponse> getOrders(Long userId) {
+        return userDao.getOrders(userId);
+    }
+
+    public void createAddress(String userId, UserAddressRequest userAddressRequest) {
+        userDao.createAddress(userId,userAddressRequest);
+    }
 }
