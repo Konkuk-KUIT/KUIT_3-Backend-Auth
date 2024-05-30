@@ -18,7 +18,7 @@ public class CategoryService {
         return categoryDao.getAllCategories();
     }
 
-    public List<CategoryStoreResponse> getStore(Long categoryId, int minOrderFee) {
-        return categoryDao.getStores(categoryId,minOrderFee);
+    public List<CategoryStoreResponse> getStore(Long categoryId, int minOrderFee, int page) {
+        return categoryDao.getStores(categoryId,minOrderFee,page);
     }
 }

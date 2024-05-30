@@ -33,12 +33,14 @@ public class CategoryDao {
         }).stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public List<CategoryStoreResponse> getStores(Long categoryId, int minOrderFee) {
+    public List<CategoryStoreResponse> getStores(Long categoryId, int minOrderFee, int page) {
+        int pageSize = 5;
         String sql = "SELECT * FROM store s " +
                 "JOIN category c ON s.category_id = c.category_id " +
-                "WHERE c.category_id = ? AND s.min_price >= ?";
+                "WHERE c.category_id = ? AND s.min_price >= ? AND c.category_id > ? " +
+                "LIMIT ?";
 
-        return jdbcTemplate.query(sql, new Object[]{categoryId, minOrderFee}, (rs, rowNum) -> {
+        return jdbcTemplate.query(sql, new Object[]{categoryId, minOrderFee,page,pageSize}, (rs, rowNum) -> {
             CategoryStoreResponse store = new CategoryStoreResponse();
             if(rs.getString("s.status").equals("active")){
                 store.setStoreName(rs.getString("store_name"));

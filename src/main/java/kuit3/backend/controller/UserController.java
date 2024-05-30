@@ -82,9 +82,10 @@ public class UserController {
 
     // 유저가 주문한 모든 주문 내역 가져오기
     @GetMapping("/{userId}/orders")
-    public BaseResponse<List<UserOrdersResponse>> getOrders(@PathVariable Long userId){
+    public BaseResponse<List<UserOrdersResponse>> getOrders(@PathVariable Long userId,
+                                                            @RequestParam(required = false, defaultValue = "0") int page){
 
-        return new BaseResponse<>(userService.getOrders(userId));
+        return new BaseResponse<>(userService.getOrders(userId,page));
     }
 
 

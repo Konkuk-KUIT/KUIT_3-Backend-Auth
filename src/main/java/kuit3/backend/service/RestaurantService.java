@@ -16,12 +16,12 @@ public class RestaurantService {
 
     private final RestaurantDao restaurantDao;
 
-    public List<RestaurantOrderResponse> getOrders(Long restaurantId) {
-        return restaurantDao.getOrders(restaurantId);
+    public List<RestaurantOrderResponse> getOrders(Long restaurantId,int page) {
+        return restaurantDao.getOrders(restaurantId,page);
     }
 
-    public List<RestaurantMenuResponse> getMenu(Long restaurantId) {
-        return restaurantDao.getMenu(restaurantId);
+    public List<RestaurantMenuResponse> getMenu(Long restaurantId, int page) {
+        return restaurantDao.getMenu(restaurantId,page);
     }
 
     public void createMenu(Long restaurantId, RestaurantMenuRequest menuRequest) {

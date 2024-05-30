@@ -25,8 +25,9 @@ public class CategoryController {
     @GetMapping("/{categoryId}")
     public BaseResponse<List<CategoryStoreResponse>> CategoryStoreController(
             @PathVariable Long categoryId,
-            @RequestParam(name = "min-order-fee", required = false) int minOrderFee){
-        return new BaseResponse<>(categoryService.getStore(categoryId,minOrderFee));
+            @RequestParam(name = "min-order-fee", required = false) int minOrderFee,
+            @RequestParam(required = false, defaultValue = "0") int page){
+        return new BaseResponse<>(categoryService.getStore(categoryId,minOrderFee,page));
     }
 
 

@@ -107,18 +107,22 @@ public class UserDao {
         return jdbcTemplate.update(sql, param);
     }
 
-    public List<UserOrdersResponse> getOrders(Long userId) {
+    public List<UserOrdersResponse> getOrders(Long userId, int page) {
+        int pageSize = 5;
         String sql = "select * from user u join orders o on u.user_id = o.user_id " +
                 "join order_menu om on o.order_id = om.order_id " +
                 "join store s on o.store_id = s.store_id " +
                 "join menu m on m.store_id = s.store_id " +
-                "where u.user_id=:user_id";
+                "where u.user_id=:user_id AND o.order_id > :page " +
+                "LIMIT :pageSize";
 
-        Map<String, Object> param = Map.of(
-                "user_id", userId);
+        Map<String, Object> params = Map.of(
+                "user_id", userId,
+                "page", page,
+                "pageSize", pageSize);
 
 
-        return jdbcTemplate.query(sql, param,(rs, rowNum) -> {
+        return jdbcTemplate.query(sql, params,(rs, rowNum) -> {
             UserOrdersResponse orders = new UserOrdersResponse();
 
             orders.setStoreName(rs.getString("store_name"));

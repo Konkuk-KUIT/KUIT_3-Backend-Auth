@@ -31,9 +31,11 @@ public class RestaurantDao {
     }
 
 
-    public List<RestaurantOrderResponse> getOrders(Long restaurantId) {
-        String sql = "SELECT * FROM store s JOIN orders o ON s.store_id = o.store_id WHERE s.store_id = ?";
-        return jdbcTemplate.query(sql, new Object[]{restaurantId}, (rs, rowNum) -> {
+    public List<RestaurantOrderResponse> getOrders(Long restaurantId, int page) {
+        int pageSize = 5;
+        String sql = "SELECT * FROM store s JOIN orders o ON s.store_id = o.store_id " +
+                "WHERE s.store_id = ? AND o.order_id > ? LIMIT ?";
+        return jdbcTemplate.query(sql, new Object[]{restaurantId,page, pageSize}, (rs, rowNum) -> {
             RestaurantOrderResponse order = new RestaurantOrderResponse();
 
             order.setOrderId(rs.getLong("order_id"));
@@ -48,12 +50,15 @@ public class RestaurantDao {
         });
     }
 
-    public List<RestaurantMenuResponse> getMenu(Long restaurantId) {
+    public List<RestaurantMenuResponse> getMenu(Long restaurantId, int page) {
+        int pageSize = 5;
+
         String sql = "SELECT * FROM menu m " +
                 "JOIN store s ON m.store_id = s.store_id " +
-                "WHERE m.store_id = ?";
+                "WHERE m.store_id = ? AND m.menu_id > ? " +
+                "LIMIT ?";
 
-        return jdbcTemplate.query(sql, new Object[]{restaurantId},(rs, rowNum) -> {
+        return jdbcTemplate.query(sql, new Object[]{restaurantId,page,pageSize},(rs, rowNum) -> {
             RestaurantMenuResponse menu = new RestaurantMenuResponse();
 
             menu.setMenuName(rs.getString("menu_name"));

@@ -86,8 +86,8 @@ public class UserService {
     }
 
 
-    public List<UserOrdersResponse> getOrders(Long userId) {
-        return userDao.getOrders(userId);
+    public List<UserOrdersResponse> getOrders(Long userId, int page) {
+        return userDao.getOrders(userId, page);
     }
 
     public void createAddress(String userId, UserAddressRequest userAddressRequest) {
