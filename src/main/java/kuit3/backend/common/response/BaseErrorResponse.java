@@ -1,11 +1,11 @@
 package kuit3.backend.common.response;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import kuit3.backend.common.response.status.ResponseStatus;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-
+// 실패 응답 객체
 @Getter
 @JsonPropertyOrder({"code", "status", "message", "timestamp"})
 public class BaseErrorResponse implements ResponseStatus {

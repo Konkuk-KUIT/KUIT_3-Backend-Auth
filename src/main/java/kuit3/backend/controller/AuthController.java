@@ -28,6 +28,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public BaseResponse<LoginResponse> login(@Validated @RequestBody LoginRequest authRequest, BindingResult bindingResult) {
+        log.info("[AuthController.login]");
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
@@ -38,8 +39,9 @@ public class AuthController {
      * 인가(JWT 검증) 테스트
      */
     @GetMapping("/test")
-    public BaseResponse<String> checkAuthorization(@PreAuthorize Long userId) {
-        return new BaseResponse<>("userId=" + userId);
+    public BaseResponse<String> checkAuthorization(@PreAuthorize long userid) {
+        log.info("[AuthController.checkAuthorization]");
+        return new BaseResponse<>("userid=" + userid);
     }
 
 }

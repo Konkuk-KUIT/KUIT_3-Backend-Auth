@@ -1,7 +1,7 @@
 package kuit3.backend.common.exception_handler;
 
-import jakarta.annotation.Priority;
 import kuit3.backend.common.response.BaseErrorResponse;
+import jakarta.annotation.Priority;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -31,4 +31,5 @@ public class DatabaseExceptionControllerAdvice {
         log.error("[handle_DataAccessException]", e);
         return new BaseErrorResponse(DATABASE_ERROR);
     }
+
 }

@@ -1,13 +1,12 @@
 package kuit3.backend.common.interceptor;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import kuit3.backend.common.exception.jwt.unauthorized.JwtExpiredTokenException;
-import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtNoTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtExpiredTokenException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import kuit3.backend.jwt.JwtProvider;
-import kuit3.backend.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -24,10 +23,10 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
-    private final AuthService authService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        log.info("[JwtAuthInterceptor.preHandle]");
 
         String accessToken = resolveAccessToken(request);
         validateAccessToken(accessToken);
@@ -35,8 +34,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         String email = jwtProvider.getPrincipal(accessToken);
         validatePayload(email);
 
-        long userId = authService.getUserIdByEmail(email);
-        request.setAttribute("userId", userId);
+        request.setAttribute("userid", 1);
         return true;
     }
 

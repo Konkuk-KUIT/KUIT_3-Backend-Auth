@@ -1,9 +1,9 @@
 package kuit3.backend.common.exception_handler;
 
-import jakarta.validation.ConstraintViolationException;
 import kuit3.backend.common.exception.BadRequestException;
 import kuit3.backend.common.exception.InternalServerErrorException;
 import kuit3.backend.common.response.BaseErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;

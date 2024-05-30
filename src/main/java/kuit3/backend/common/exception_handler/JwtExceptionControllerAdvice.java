@@ -1,9 +1,9 @@
 package kuit3.backend.common.exception_handler;
 
-import jakarta.annotation.Priority;
 import kuit3.backend.common.exception.jwt.bad_request.JwtBadRequestException;
 import kuit3.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 import kuit3.backend.common.response.BaseErrorResponse;
+import jakarta.annotation.Priority;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,4 +28,5 @@ public class JwtExceptionControllerAdvice {
         log.error("[handle_JwtUnauthorizedException]", e);
         return new BaseErrorResponse(e.getExceptionStatus());
     }
+
 }
