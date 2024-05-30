@@ -40,8 +40,9 @@ public class RestaurantService {
         }
     }
 
-    public List<GetRestaurantResponse> getRestaurants(String name, String location, String status) {
-        List<RestaurantDto> restaurantDtos = restaurantDao.getRestaurants(name, location, status);
+    public List<GetRestaurantResponse> getRestaurants(String name, String location, String status, int page, int size) {
+        int offset = page * size;
+        List<RestaurantDto> restaurantDtos = restaurantDao.getRestaurants(name, location, status, offset, size);
         return restaurantDtos.stream()
                 .map(dto -> new GetRestaurantResponse(
                         dto.getRestaurantid(),
@@ -75,5 +76,4 @@ public class RestaurantService {
             throw new RestaurantException(DUPLICATE_PHONE);
         }
     }
-
 }

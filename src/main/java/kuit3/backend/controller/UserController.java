@@ -1,5 +1,6 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.JWTAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
@@ -39,8 +40,8 @@ public class UserController {
     /**
      * 회원 휴면
      */
-    @PatchMapping("/{userid}/Inactive")
-    public BaseResponse<Object> modifyUserStatus_Inactive(@PathVariable long userid) {
+    @PatchMapping("/Inactive")
+    public BaseResponse<Object> modifyUserStatus_Inactive(@JWTAuthorize long userid) {
         log.info("[UserController.modifyUserStatus_Inactive]");
         userService.modifyUserStatus_Inactive(userid);
         return new BaseResponse<>(null);
@@ -50,8 +51,8 @@ public class UserController {
     /**
      * 회원 탈퇴
      */
-    @PatchMapping("/{userid}/deleted")
-    public BaseResponse<Object> modifyUserStatus_deleted(@PathVariable long userid) {
+    @PatchMapping("/deleted")
+    public BaseResponse<Object> modifyUserStatus_deleted(@JWTAuthorize long userid) {
         log.info("[UserController.modifyUserStatus_delete]");
         userService.modifyUserStatus_deleted(userid);
         return new BaseResponse<>(null);
@@ -60,8 +61,8 @@ public class UserController {
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userid}/name")
-    public BaseResponse<String> modifyNickname(@PathVariable long userid,
+    @PatchMapping("/name")
+    public BaseResponse<String> modifyNickname(@JWTAuthorize long userid,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         log.info("[UserController.modifyNickname]");
         if (bindingResult.hasErrors()) {

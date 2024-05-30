@@ -38,13 +38,13 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String resolveAccessToken(HttpServletRequest request) {
+    public String resolveAccessToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         validateToken(token);
         return token.substring(JWT_TOKEN_PREFIX.length());
     }
 
-    private void validateToken(String token) {
+    public void validateToken(String token) {
         if (token == null) {
             throw new JwtNoTokenException(TOKEN_NOT_FOUND);
         }
@@ -53,16 +53,19 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void validateAccessToken(String accessToken) {
+    public void validateAccessToken(String accessToken) {
         if (jwtProvider.isExpiredToken(accessToken)) {
             throw new JwtExpiredTokenException(EXPIRED_TOKEN);
         }
     }
 
-    private void validatePayload(String email) {
+    public void validatePayload(String email) {
         if (email == null) {
             throw new JwtInvalidTokenException(INVALID_TOKEN);
         }
     }
 
+    public String getEmail(String accessToken) {
+        return jwtProvider.getPrincipal(accessToken);
+    }
 }

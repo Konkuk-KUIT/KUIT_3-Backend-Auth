@@ -25,6 +25,7 @@ public class RestaurantDao {
     public RestaurantDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
+
     // 레스토랑 생성
     public long createRestaurant(PostRestaurantRequest postRestaurantRequest) {
         String sql = "insert into Restaurant(name, location, phone, category, min_order_amount, status) " +
@@ -45,7 +46,8 @@ public class RestaurantDao {
                 "restaurantid", restaurantid);
         return jdbcTemplate.update(sql, param);
     }
-    // 디테일 스정
+
+    // 디테일 수정
     public int modifyRestaurantDetails(long restaurantid, String name, String location, String phone, String category, int minOrderAmount) {
         String sql = "update Restaurant set name=:name, location=:location, phone=:phone, category=:category, min_order_amount=:minOrderAmount where restaurantid=:restaurantid";
         Map<String, Object> param = Map.of(
@@ -57,7 +59,8 @@ public class RestaurantDao {
                 "restaurantid", restaurantid);
         return jdbcTemplate.update(sql, param);
     }
-    public List<RestaurantDto> getRestaurants(String name, String location, String status) {
+
+    public List<RestaurantDto> getRestaurants(String name, String location, String status, int offset, int limit) {
         String sql = "select restaurantid, name, location, phone, category, min_order_amount, status from Restaurant " +
                 "where name like :name and location like :location";
 
@@ -72,6 +75,10 @@ public class RestaurantDao {
             param.put("status", status);
         }
 
+        sql += " limit :limit offset :offset";
+        param.put("limit", limit);
+        param.put("offset", offset);
+
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new RestaurantDto(
                         rs.getLong("restaurantid"),
@@ -83,7 +90,6 @@ public class RestaurantDao {
                         rs.getString("status"))
         );
     }
-
 
     public RestaurantDto getRestaurantById(long restaurantid) {
         String sql = "select restaurantid, name, location, phone, category, min_order_amount, status from Restaurant where restaurantid=:restaurantid";
@@ -106,11 +112,9 @@ public class RestaurantDao {
         return jdbcTemplate.queryForObject(sql, param, Long.class);
     }
 
-
     public boolean hasDuplicatePhone(String phone) {
         String sql = "select exists(select phone from restaurant where phone=:phone)";
         Map<String, Object> param = Map.of("phone", phone);
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, param, Boolean.class));
     }
-
 }

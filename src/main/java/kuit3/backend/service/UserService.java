@@ -44,14 +44,14 @@ public class UserService {
         // TODO: 4. JWT 토큰 생성
         String jwt = jwtProvider.createToken(postUserRequest.getEmail(), userid);
 
-        return new kuit3.backend.dto.user.PostUserResponse(userid, jwt);
+        return new kuit3.backend.dto.user.PostUserResponse(jwt);
     }
 
     public kuit3.backend.dto.user.PostLoginResponse login(kuit3.backend.dto.user.PostLoginRequest postLoginRequest) {
         log.info("[UserService.loginUser]");
         long userid=1;
         String jwt = jwtProvider.createToken(postLoginRequest.getEmail(), userid);
-        return new kuit3.backend.dto.user.PostLoginResponse(userid,jwt);
+        return new kuit3.backend.dto.user.PostLoginResponse(jwt);
     }
 
     public void modifyUserStatus_Inactive(long userid) {

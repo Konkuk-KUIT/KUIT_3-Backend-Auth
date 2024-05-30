@@ -71,12 +71,14 @@ public class RestaurantController {
     public BaseResponse<List<GetRestaurantResponse>> getRestaurants(
             @RequestParam(required = false, defaultValue = "") String name,
             @RequestParam(required = false, defaultValue = "") String location,
-            @RequestParam(required = false, defaultValue = "Open") String status) {
+            @RequestParam(required = false, defaultValue = "Open") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         log.info("[RestaurantController.getRestaurants]");
         if (!status.equals("Close") && !status.equals("Open")) {
             throw new UserException(INVALID_RESTAURANT_STATUS);
         }
-        return new BaseResponse<>(restaurantService.getRestaurants(name, location, status));
+        return new BaseResponse<>(restaurantService.getRestaurants(name, location, status, page, size));
     }
 
     /**

@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostLoginResponse {
 
-    private long userid;
     private String jwt;
 
 }
