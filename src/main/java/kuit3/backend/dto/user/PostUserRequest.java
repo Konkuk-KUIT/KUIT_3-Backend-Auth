@@ -30,7 +30,7 @@ public class PostUserRequest {
     @Length(max = 20, message = "phoneNumber: 최대 {max}자리까지 가능합니다")
     private String phoneNumber;
 
-    @Nullable
+    @NotBlank
     @Length(max = 25, message = "nickname: 최대 {max}자리까지 가능합니다")
     private String nickname;
 
