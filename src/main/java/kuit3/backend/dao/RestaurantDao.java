@@ -19,6 +19,7 @@ import java.util.Objects;
 @Repository
 public class RestaurantDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final int LIMIT_NUM = 5;
 
     public RestaurantDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -36,11 +37,20 @@ public class RestaurantDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<GetRestaurantResponse> findRestaurantsByCategory(int categoryId) {
+    public List<GetRestaurantResponse> findRestaurantsByCategory(Integer categoryId, Long lastId) {
         String sql = "select * " +
-                "from restaurant where category = :category;";
-        Map<String, Integer> param = Map.of("category", categoryId);
+                "from restaurant where category = :category";
 
+        String nextPageSQL = "select EXISTS(" + sql + " AND restaurant_id >= :nextId)";
+        Map<String, Object> nextPageParams = Map.of("nextId", lastId + LIMIT_NUM);
+        Boolean hasNext = Boolean.TRUE.equals(jdbcTemplate.queryForObject(nextPageSQL, nextPageParams, boolean.class));
+
+        sql += " AND restaurant_id > :lastId LIMIT :limit";
+        Map<String, Object> param = Map.of(
+                "category", categoryId,
+                "lastId", lastId,
+                "limit", LIMIT_NUM
+        );
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetRestaurantResponse(
                         rs.getString("name"),
@@ -52,7 +62,8 @@ public class RestaurantDao {
                         Integer.parseInt(rs.getString("minimum_order_price")),
                         rs.getString("status"),
                         Integer.parseInt(rs.getString("star_rate")),
-                        Integer.parseInt(rs.getString("delivery_fee"))
+                        Integer.parseInt(rs.getString("delivery_fee")),
+                        hasNext // 수정
                 )
         );
     }
@@ -82,7 +93,7 @@ public class RestaurantDao {
         return jdbcTemplate.update(sql, param);
     }
 
-    public List<GetRestaurantResponse> search(String keyword, String minStar, String maxDeliveryFee) {
+    public List<GetRestaurantResponse> search(String keyword, String minStar, String maxDeliveryFee, Long lastId) {
         String sql = "SELECT * " +
                 "FROM restaurant WHERE 1=1";
 
@@ -96,9 +107,21 @@ public class RestaurantDao {
             sql += " AND delivery_fee <= " + maxDeliveryFee;
         }
 
+        // 다음 페이지가 존재하는지 로직을 짜려고 했는데 생각보다 어렵네요...
+        String nextPageSQL = "select EXISTS(" + sql + " AND restaurant_id >= :nextId)";
+        Map<String, Object> nextPageParams = Map.of("nextId", lastId + LIMIT_NUM);
+        Boolean hasNext = Boolean.TRUE.equals(jdbcTemplate.queryForObject(nextPageSQL, nextPageParams, boolean.class));
+
+        sql += " AND restaurant_id > :lastId LIMIT :limit";
+        Map<String, Object> params = Map.of(
+                "lastId", lastId,
+                "limit", LIMIT_NUM
+        );
+
         log.info("restaurantService.search :: sql = " + sql);
 
         return jdbcTemplate.query(sql,
+                params,
                 (rs, rowNum) -> new GetRestaurantResponse(
                         rs.getString("name"),
                         rs.getString("address"),
@@ -109,7 +132,8 @@ public class RestaurantDao {
                         Integer.parseInt(rs.getString("minimum_order_price")),
                         rs.getString("status"),
                         Integer.parseInt(rs.getString("star_rate")),
-                        Integer.parseInt(rs.getString("delivery_fee"))
+                        Integer.parseInt(rs.getString("delivery_fee")),
+                        hasNext
                 )
         );
     }

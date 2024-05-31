@@ -45,8 +45,9 @@ public class RestaurantController {
     특정 종류의 식당 조회
      */
     @GetMapping("categories/{categoryId}")
-    public BaseResponse<List<GetRestaurantResponse>> getRestaurants(@PathVariable int categoryId){
-        return new BaseResponse<List<GetRestaurantResponse>>(restaurantService.findRestaurantsByCategory(categoryId));
+    public BaseResponse<List<GetRestaurantResponse>> getRestaurants(@PathVariable int categoryId,
+                                                                    @RequestParam Long lastId){
+        return new BaseResponse<List<GetRestaurantResponse>>(restaurantService.findRestaurantsByCategory(categoryId, lastId));
     }
 
     /*
@@ -93,9 +94,10 @@ public class RestaurantController {
     public BaseResponse<List<GetRestaurantResponse>> searchRestraurants(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "min_star", required = false) Integer min_star,
-            @RequestParam(value = "max_delivery_fee", required = false) String max_delivery_fee
+            @RequestParam(value = "max_delivery_fee", required = false) String max_delivery_fee,
+            @RequestParam(required = true) Long lastId
     ){
-        return new BaseResponse<>(restaurantService.search(keyword, min_star, max_delivery_fee));
+        return new BaseResponse<>(restaurantService.search(keyword, min_star, max_delivery_fee, lastId));
     }
 
 }

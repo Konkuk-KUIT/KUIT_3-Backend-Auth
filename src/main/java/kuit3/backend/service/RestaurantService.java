@@ -32,8 +32,8 @@ public class RestaurantService {
         return new PostRestaurantResponse(restaurantId);
     }
 
-    public List<GetRestaurantResponse> findRestaurantsByCategory(int categoryId) {
-        return restaurantDao.findRestaurantsByCategory(categoryId);
+    public List<GetRestaurantResponse> findRestaurantsByCategory(int categoryId, Long lastId) {
+        return restaurantDao.findRestaurantsByCategory(categoryId, lastId);
     }
 
     public Long addMenu(long restaurantId, PostRestaurantMenuRequest postRestaurantMenuRequest) {
@@ -80,10 +80,10 @@ public class RestaurantService {
         restaurantDao.modifyBusinessHour(restaurantId, businessHour);
     }
 
-    public List<GetRestaurantResponse> search(String keyword, Integer minStar, String maxDeliveryFee) {
+    public List<GetRestaurantResponse> search(String keyword, Integer minStar, String maxDeliveryFee, Long lastId) {
         if(minStar != null){
-            return restaurantDao.search(keyword, minStar.toString(), maxDeliveryFee);
+            return restaurantDao.search(keyword, minStar.toString(), maxDeliveryFee, lastId);
         }
-        return restaurantDao.search(keyword, null, maxDeliveryFee);
+        return restaurantDao.search(keyword, null, maxDeliveryFee, lastId);
     }
 }

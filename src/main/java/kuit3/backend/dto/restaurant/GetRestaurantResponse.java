@@ -18,4 +18,5 @@ public class GetRestaurantResponse {
     private String status;
     private int star_rate;
     private int delivery_fee;
+    private boolean has_next;
 }
