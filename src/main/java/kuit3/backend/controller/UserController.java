@@ -68,6 +68,19 @@ public class UserController {
     }
 
     /**
+     * 비밀번호 변경
+     */
+    @PatchMapping("/password")
+    public BaseResponse<String> modifyPassword(@PreAuthorize long userId,
+                                               @Validated @RequestBody PatchPasswordRequest patchPasswordRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
+        }
+        userService.modifyPassword(userId, patchPasswordRequest.getPassword());
+        return new BaseResponse<>(null);
+    }
+
+    /**
      * 회원 목록 조회
      */
     @GetMapping("")
