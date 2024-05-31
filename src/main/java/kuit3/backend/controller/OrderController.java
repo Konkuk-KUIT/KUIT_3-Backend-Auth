@@ -1,5 +1,6 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.PreAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.order.GetOrderResponse;
@@ -29,9 +30,8 @@ public class OrderController {
     /**
      * 특정 회원의 주문 목록 조회
      */
-    @GetMapping("/{userId}")
-    public BaseResponse<List<GetOrderResponse>> getOrdersOfLoggedInUser(
-            @PathVariable long userId) {
+    @GetMapping("/my")
+    public BaseResponse<List<GetOrderResponse>> getOrdersOfLoggedInUser(@PreAuthorize Long userId) {
         return new BaseResponse<>(orderService.getOrdersByUserId(userId));
     }
 }
