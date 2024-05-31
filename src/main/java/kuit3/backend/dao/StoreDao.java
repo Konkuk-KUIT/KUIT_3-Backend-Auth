@@ -49,7 +49,7 @@ public class StoreDao {
 
     // 모든 Store 조회
     public List<GetStoreResponse> getAllStores(long lastId, int limit) {
-        String sql = "SELECT * FROM stores WHERE id > :lastId LIMIT :limit";
+        String sql = "SELECT * FROM stores WHERE storeId > :lastId LIMIT :limit";
 
         Map<String, Object> param = Map.of(
                 "lastId", lastId,
