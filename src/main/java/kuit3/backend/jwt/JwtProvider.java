@@ -7,6 +7,8 @@ import kuit3.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenExcepti
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -16,10 +18,10 @@ import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.*
 @Component
 public class JwtProvider {
 
-    @Value("${secret.jwt-secret-key}")
+    @Value("${JWT_SECRET_KEY}")
     private String JWT_SECRET_KEY;
 
-    @Value("${secret.jwt-expired-in}")
+    @Value("${JWT_EXPIRED_IN}")
     private long JWT_EXPIRED_IN;
 
     public String createToken(String principal, long userId) {
@@ -36,28 +38,6 @@ public class JwtProvider {
                 .claim("userId", userId)
                 .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .compact();
-    }
-
-    public boolean isExpiredToken(String token) throws JwtInvalidTokenException {
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(JWT_SECRET_KEY).build()
-                    .parseClaimsJws(token);
-            return claims.getBody().getExpiration().before(new Date());
-
-        } catch (ExpiredJwtException e) {
-            return true;
-
-        } catch (UnsupportedJwtException e) {
-            throw new JwtUnsupportedTokenException(UNSUPPORTED_TOKEN_TYPE);
-        } catch (MalformedJwtException e) {
-            throw new JwtMalformedTokenException(MALFORMED_TOKEN);
-        } catch (IllegalArgumentException e) {
-            throw new JwtInvalidTokenException(INVALID_TOKEN);
-        } catch (JwtException e) {
-            log.error("[JwtTokenProvider.validateAccessToken]", e);
-            throw e;
-        }
     }
 
     public String getPrincipal(String token) {
