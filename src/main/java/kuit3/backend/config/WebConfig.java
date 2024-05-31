@@ -21,7 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
-                .addPathPatterns("/auth/test");
+                .addPathPatterns("/auth/test")
+                .addPathPatterns("/users/*"); // 이게 없으면 인터셉터가 적용이 안되네요...
     }
 
     @Override

@@ -102,4 +102,13 @@ public class UserDao {
                 "user_id", userId);
         return jdbcTemplate.update(sql, param);
     }
+
+    public int modifyProfile_image(Long userId, String profile_image) {
+        String sql = "update user set profile_image = :image" +
+                " where user_id = :user_id";
+        Map<String, Object> param = Map.of(
+                "image", profile_image,
+                "user_id", userId);
+        return jdbcTemplate.update(sql, param);
+    }
 }

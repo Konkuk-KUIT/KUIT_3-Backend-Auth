@@ -3,17 +3,19 @@ package kuit3.backend.service;
 import kuit3.backend.common.exception.DatabaseException;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.dao.UserDao;
-import kuit3.backend.dto.user.*;
+import kuit3.backend.dto.user.GetUserResponse;
+import kuit3.backend.dto.user.PostUserRequest;
+import kuit3.backend.dto.user.PostUserResponse;
 import kuit3.backend.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.*;
+
 
 @Slf4j
 @Service
@@ -24,8 +26,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    @Transactional
     public PostUserResponse signUp(PostUserRequest postUserRequest) {
+        log.info("[UserService.createUser]");
 
         // TODO: 1. validation (중복 검사)
         validateEmail(postUserRequest.getEmail());
@@ -47,21 +49,27 @@ public class UserService {
         return new PostUserResponse(userId, jwt);
     }
 
-    public void modifyUserStatus_deleted(long userId) {
-        int affectedRows = userDao.modifyUserStatus_deleted(userId);
-        if (affectedRows != 1) {
-            throw new DatabaseException(DATABASE_ERROR);
-        }
-    }
-
     public void modifyUserStatus_dormant(long userId) {
+        log.info("[UserService.modifyUserStatus_dormant]");
+
         int affectedRows = userDao.modifyUserStatus_dormant(userId);
         if (affectedRows != 1) {
             throw new DatabaseException(DATABASE_ERROR);
         }
     }
 
+    public void modifyUserStatus_deleted(long userId) {
+        log.info("[UserService.modifyUserStatus_deleted]");
+
+        int affectedRows = userDao.modifyUserStatus_deleted(userId);
+        if (affectedRows != 1) {
+            throw new DatabaseException(DATABASE_ERROR);
+        }
+    }
+
     public void modifyNickname(long userId, String nickname) {
+        log.info("[UserService.modifyNickname]");
+
         validateNickname(nickname);
         int affectedRows = userDao.modifyNickname(userId, nickname);
         if (affectedRows != 1) {
@@ -70,6 +78,7 @@ public class UserService {
     }
 
     public List<GetUserResponse> getUsers(String nickname, String email, String status) {
+        log.info("[UserService.getUsers]");
         return userDao.getUsers(nickname, email, status);
     }
 
@@ -82,6 +91,13 @@ public class UserService {
     private void validateNickname(String nickname) {
         if (userDao.hasDuplicateNickName(nickname)) {
             throw new UserException(DUPLICATE_NICKNAME);
+        }
+    }
+
+    public void modifyProfile_image(Long userId, String profileImage) {
+        int affectedRows = userDao.modifyProfile_image(userId, profileImage);
+        if (affectedRows != 1) {
+            throw new DatabaseException(DATABASE_ERROR);
         }
     }
 }
