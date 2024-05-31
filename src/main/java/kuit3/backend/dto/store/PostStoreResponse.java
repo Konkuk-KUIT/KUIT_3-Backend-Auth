@@ -8,5 +8,4 @@ import lombok.Getter;
 public class PostStoreResponse {
 
     private long storeId;
-    private String jwt;
 }
