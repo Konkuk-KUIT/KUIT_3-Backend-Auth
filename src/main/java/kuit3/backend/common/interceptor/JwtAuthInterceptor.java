@@ -23,6 +23,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
+    //테스트를 위한 줄
     private final JwtProvider jwtProvider;
     private final AuthService authService;
 
