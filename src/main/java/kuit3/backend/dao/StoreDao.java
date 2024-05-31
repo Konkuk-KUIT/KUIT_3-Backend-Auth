@@ -45,7 +45,7 @@ public class StoreDao {
                 rs.getString("phone_number")
         ));
     }
-
+    /*
     public List<GetStoreResponse> findAllStores() {
         String sql = "SELECT store_id, name, address, food_category, type, phone_number FROM Store";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new GetStoreResponse(
@@ -57,6 +57,7 @@ public class StoreDao {
                 rs.getString("phone_number")
         ));
     }
+     */
 
     public boolean hasDuplicateStoreName(String storename) {
         String sql = "select exists(select name from store where name =:name)";
@@ -70,7 +71,7 @@ public class StoreDao {
                 "storeId", storeId,
                 "foodCategory", foodCategory
 
-                );
+        );
         return jdbcTemplate.update(sql, params);
     }
 
@@ -79,6 +80,23 @@ public class StoreDao {
         String sql = "SELECT address FROM store WHERE store_id = :storeId";
         Map<String, Object> params = Map.of("storeId", storeId);
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, String.class));
+    }
+
+    public List<GetStoreResponse> findStoresFromIndex(int endIndex, int limit) {
+        String sql = "SELECT * FROM Store ORDER BY store_id LIMIT :limit OFFSET :endIndex";
+        // store_id로 정렬하고, LIMIT & OFFSET를 이용해 페이징 처리
+        Map<String, Object> params = Map.of(
+                "endIndex", endIndex,
+                "limit", limit
+        );
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetStoreResponse(
+                rs.getLong("store_id"),
+                rs.getString("name"),
+                rs.getString("address"),
+                rs.getString("food_category"),
+                rs.getInt("type"),
+                rs.getString("phone_number")
+        ));
     }
 }
 

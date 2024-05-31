@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.DUPLICATE_STORENAME;
 
@@ -29,11 +30,11 @@ public class StoreService {
         log.info("[StoreService.getStoreById]", storeId);
         return storeDao.findStoreById(storeId);
     }
-
+    /*
     public List<GetStoreResponse> getAllStores() {
         return storeDao.findAllStores();
     }
-
+    */
     private void validateStoreName(String storename) {
         if (storeDao.hasDuplicateStoreName(storename)) {
             throw new StoreException(DUPLICATE_STORENAME);
@@ -50,5 +51,10 @@ public class StoreService {
     public String getStoreAddress(long storeId) {
         return storeDao.findStoreAddressById(storeId)
                 .orElseThrow(() -> new RuntimeException("Store with ID " + storeId + " not found"));
+    }
+
+    public List<GetStoreResponse> findAllStoresFromIndex(Optional<Integer> endIndex, int limit) {
+        int offset = endIndex.orElse(0); // 기본값 0
+        return storeDao.findStoresFromIndex(offset, limit);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
 import static kuit3.backend.util.BindingResultUtils.getErrorMessages;
@@ -35,10 +36,20 @@ public class StoreController {
         return new BaseResponse<>(storeId);
     }
 
+    /*
+        @GetMapping("")
+        public BaseResponse<List<GetStoreResponse>> getAllStores() {
+            List<GetStoreResponse> stores = storeService.getAllStores();
+            return new BaseResponse<>(stores);
+        }
 
+     */
     @GetMapping("")
-    public BaseResponse<List<GetStoreResponse>> getAllStores() {
-        List<GetStoreResponse> stores = storeService.getAllStores();
+    public BaseResponse<List<GetStoreResponse>> getAllStores(
+            //선택적 파라미터 endIndex => 마지막으로 보여준 storeId (안보내주면 인덱스 0처리)
+            @RequestParam Optional<Integer> endIndex,
+            @RequestParam(defaultValue = "10") int limit) {
+        List<GetStoreResponse> stores = storeService.findAllStoresFromIndex(endIndex, limit);
         return new BaseResponse<>(stores);
     }
 
@@ -64,6 +75,6 @@ public class StoreController {
     @GetMapping("/{storeId}/address")
     public BaseResponse<GetStoreAddressResponse> getAddress(@PathVariable long storeId) {
         String address = storeService.getStoreAddress(storeId);
-        return new BaseResponse<>(new GetStoreAddressResponse(storeId,address));
+        return new BaseResponse<>(new GetStoreAddressResponse(storeId, address));
     }
 }
