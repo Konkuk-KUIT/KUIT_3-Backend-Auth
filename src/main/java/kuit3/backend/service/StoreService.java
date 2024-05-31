@@ -6,7 +6,6 @@ import kuit3.backend.dto.store.GetStoreResponse;
 import kuit3.backend.dto.store.PostStoreRequest;
 import kuit3.backend.dto.store.PostStoreResponse;
 import kuit3.backend.dto.store.PutStoreRequest;
-import kuit3.backend.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,12 @@ import java.util.List;
 public class StoreService {
 
     private final StoreDao storeDao;
-    private final JwtProvider jwtProvider;
 
     // 새로운 Store 생성
     public PostStoreResponse createStore(PostStoreRequest postStoreRequest) {
         long storeId = storeDao.createStore(postStoreRequest);
-        String jwt = jwtProvider.createToken(postStoreRequest.getAddress(), storeId);
 
-        return new PostStoreResponse(storeId, jwt);
+        return new PostStoreResponse(storeId);
     }
 
     // Store 조회
@@ -33,8 +30,8 @@ public class StoreService {
     }
 
     // 모든 Store 조회
-    public List<GetStoreResponse> getAllStores() {
-        return storeDao.getAllStores();
+    public List<GetStoreResponse> getAllStores(long lastId, int size) {
+        return storeDao.getAllStores(lastId, size);
     }
 
     // 카테고리가 Food인 스토어들을 조회하는 메서드

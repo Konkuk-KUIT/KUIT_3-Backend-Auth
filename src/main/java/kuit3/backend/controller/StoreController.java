@@ -51,8 +51,11 @@ public class StoreController {
 
     // 모든 Store 조회
     @GetMapping("")
-    public BaseResponse<List<GetStoreResponse>> getAllStores() {
-        List<GetStoreResponse> stores = storeService.getAllStores();
+    public BaseResponse<List<GetStoreResponse>> getAllStores(
+            @RequestParam(required = false, defaultValue = "0") long lastId,
+            @RequestParam(required = false, defaultValue = "20") int size
+    ) {
+        List<GetStoreResponse> stores = storeService.getAllStores(lastId, size);
         return new BaseResponse<>(stores);
     }
 

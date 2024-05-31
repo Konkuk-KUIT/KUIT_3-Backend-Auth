@@ -48,9 +48,15 @@ public class StoreDao {
     }
 
     // 모든 Store 조회
-    public List<GetStoreResponse> getAllStores() {
-        String sql = "SELECT * FROM stores";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(GetStoreResponse.class));
+    public List<GetStoreResponse> getAllStores(long lastId, int limit) {
+        String sql = "SELECT * FROM stores WHERE id > :lastId LIMIT :limit";
+
+        Map<String, Object> param = Map.of(
+                "lastId", lastId,
+                "limit", limit
+        );
+
+        return jdbcTemplate.query(sql, param, new BeanPropertyRowMapper<>(GetStoreResponse.class));
     }
 
     // 카테고리가 Food인 스토어들을 조회하는 메서드
