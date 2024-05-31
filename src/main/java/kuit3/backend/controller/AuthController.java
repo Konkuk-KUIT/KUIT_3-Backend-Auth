@@ -1,6 +1,6 @@
 package kuit3.backend.controller;
 
-import kuit3.backend.common.argument_resolver.PreAuthorize;
+import kuit3.backend.common.argument_resolver.JWTAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.auth.LoginRequest;
@@ -28,6 +28,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public BaseResponse<LoginResponse> login(@Validated @RequestBody LoginRequest authRequest, BindingResult bindingResult) {
+        log.info("[AuthController.login]");
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
@@ -38,8 +39,9 @@ public class AuthController {
      * 인가(JWT 검증) 테스트
      */
     @GetMapping("/test")
-    public BaseResponse<String> checkAuthorization(@PreAuthorize Long userId) {
-        return new BaseResponse<>("userId=" + userId);
+    public BaseResponse<String> checkAuthorization(@JWTAuthorize long userid) {
+        log.info("[AuthController.checkAuthorization]");
+        return new BaseResponse<>("userid=" + userid);
     }
 
 }

@@ -1,5 +1,6 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.JWTAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
@@ -19,7 +20,7 @@ import static kuit3.backend.util.BindingResultUtils.getErrorMessages;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -29,6 +30,7 @@ public class UserController {
      */
     @PostMapping("")
     public BaseResponse<PostUserResponse> signUp(@Validated @RequestBody PostUserRequest postUserRequest, BindingResult bindingResult) {
+        log.info("[UserController.signUp]");
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
@@ -38,31 +40,35 @@ public class UserController {
     /**
      * 회원 휴면
      */
-    @PatchMapping("/{userId}/dormant")
-    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId) {
-        userService.modifyUserStatus_dormant(userId);
+    @PatchMapping("/Inactive")
+    public BaseResponse<Object> modifyUserStatus_Inactive(@JWTAuthorize long userid) {
+        log.info("[UserController.modifyUserStatus_Inactive]");
+        userService.modifyUserStatus_Inactive(userid);
         return new BaseResponse<>(null);
+//        USER_NOT_FOUND
     }
 
     /**
      * 회원 탈퇴
      */
-    @PatchMapping("/{userId}/deleted")
-    public BaseResponse<Object> modifyUserStatus_deleted(@PathVariable long userId) {
-        userService.modifyUserStatus_deleted(userId);
+    @PatchMapping("/deleted")
+    public BaseResponse<Object> modifyUserStatus_deleted(@JWTAuthorize long userid) {
+        log.info("[UserController.modifyUserStatus_delete]");
+        userService.modifyUserStatus_deleted(userid);
         return new BaseResponse<>(null);
     }
 
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable long userId,
+    @PatchMapping("/name")
+    public BaseResponse<String> modifyNickname(@JWTAuthorize long userid,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
+        log.info("[UserController.modifyNickname]");
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        userService.modifyNickname(userId, patchNicknameRequest.getNickname());
+        userService.modifyNickname(userid, patchNicknameRequest.getName());
         return new BaseResponse<>(null);
     }
 
@@ -71,12 +77,15 @@ public class UserController {
      */
     @GetMapping("")
     public BaseResponse<List<GetUserResponse>> getUsers(
-            @RequestParam(required = false, defaultValue = "") String nickname,
+            @RequestParam(required = false, defaultValue = "") String name,
             @RequestParam(required = false, defaultValue = "") String email,
-            @RequestParam(required = false, defaultValue = "active") String status) {
-        if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
+            @RequestParam(required = false, defaultValue = "Active") String status) {
+        log.info("[UserController.getUsers]");
+        if (!status.equals("Active") && !status.equals("Inactive") && !status.equals("Deleted")) {
             throw new UserException(INVALID_USER_STATUS);
         }
-        return new BaseResponse<>(userService.getUsers(nickname, email, status));
+        return new BaseResponse<>(userService.getUsers(name, email, status));
     }
+
+
 }

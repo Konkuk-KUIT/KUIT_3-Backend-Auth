@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -24,14 +24,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    @Transactional
-    public PostUserResponse signUp(PostUserRequest postUserRequest) {
+    public kuit3.backend.dto.user.PostUserResponse signUp(kuit3.backend.dto.user.PostUserRequest postUserRequest) {
+        log.info("[UserService.createUser]");
 
         // TODO: 1. validation (중복 검사)
         validateEmail(postUserRequest.getEmail());
-        String nickname = postUserRequest.getNickname();
-        if (nickname != null) {
-            validateNickname(postUserRequest.getNickname());
+        String name = postUserRequest.getName();
+        if (name != null) {
+            validateNickname(postUserRequest.getName());
         }
 
         // TODO: 2. password 암호화
@@ -39,38 +39,52 @@ public class UserService {
         postUserRequest.resetPassword(encodedPassword);
 
         // TODO: 3. DB insert & userId 반환
-        long userId = userDao.createUser(postUserRequest);
+        long userid = userDao.createUser(postUserRequest);
 
         // TODO: 4. JWT 토큰 생성
-        String jwt = jwtProvider.createToken(postUserRequest.getEmail(), userId);
+        String jwt = jwtProvider.createToken(postUserRequest.getEmail(), userid);
 
-        return new PostUserResponse(userId, jwt);
+        return new kuit3.backend.dto.user.PostUserResponse(jwt);
     }
 
-    public void modifyUserStatus_deleted(long userId) {
-        int affectedRows = userDao.modifyUserStatus_deleted(userId);
+    public kuit3.backend.dto.user.PostLoginResponse login(kuit3.backend.dto.user.PostLoginRequest postLoginRequest) {
+        log.info("[UserService.loginUser]");
+        long userid=1;
+        String jwt = jwtProvider.createToken(postLoginRequest.getEmail(), userid);
+        return new kuit3.backend.dto.user.PostLoginResponse(jwt);
+    }
+
+    public void modifyUserStatus_Inactive(long userid) {
+        log.info("[UserService.modifyUserStatus_Inactive]");
+
+        int affectedRows = userDao.modifyUserStatus_Inactive(userid);
         if (affectedRows != 1) {
-            throw new DatabaseException(DATABASE_ERROR);
+            throw new UserException(USER_NOT_FOUND);
         }
     }
 
-    public void modifyUserStatus_dormant(long userId) {
-        int affectedRows = userDao.modifyUserStatus_dormant(userId);
+    public void modifyUserStatus_deleted(long userid) {
+        log.info("[UserService.modifyUserStatus_deleted]");
+
+        int affectedRows = userDao.modifyUserStatus_deleted(userid);
         if (affectedRows != 1) {
-            throw new DatabaseException(DATABASE_ERROR);
+            throw new UserException(USER_NOT_FOUND);
         }
     }
 
-    public void modifyNickname(long userId, String nickname) {
-        validateNickname(nickname);
-        int affectedRows = userDao.modifyNickname(userId, nickname);
+    public void modifyNickname(long userid, String name) {
+        log.info("[UserService.modifyNickname]");
+
+        validateNickname(name);
+        int affectedRows = userDao.modifyNickname(userid, name);
         if (affectedRows != 1) {
-            throw new DatabaseException(DATABASE_ERROR);
+            throw new UserException(USER_NOT_FOUND);
         }
     }
 
-    public List<GetUserResponse> getUsers(String nickname, String email, String status) {
-        return userDao.getUsers(nickname, email, status);
+    public List<kuit3.backend.dto.user.GetUserResponse> getUsers(String name, String email, String status) {
+        log.info("[UserService.getUsers]");
+        return userDao.getUsers(name, email, status);
     }
 
     private void validateEmail(String email) {
@@ -79,9 +93,11 @@ public class UserService {
         }
     }
 
-    private void validateNickname(String nickname) {
-        if (userDao.hasDuplicateNickName(nickname)) {
+    private void validateNickname(String name) {
+        if (userDao.hasDuplicateNickName(name)) {
             throw new UserException(DUPLICATE_NICKNAME);
         }
     }
+
+
 }

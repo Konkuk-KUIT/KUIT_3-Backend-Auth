@@ -1,12 +1,12 @@
 package kuit3.backend.common.response;
 
+import kuit3.backend.common.response.status.ResponseStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import kuit3.backend.common.response.status.ResponseStatus;
 import lombok.Getter;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.SUCCESS;
-
+// 성공 응답 객체
 @Getter
 @JsonPropertyOrder({"code", "status", "message", "result"})
 public class BaseResponse<T> implements ResponseStatus {

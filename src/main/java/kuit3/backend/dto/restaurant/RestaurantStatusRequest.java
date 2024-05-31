@@ -1,4 +1,4 @@
-package kuit3.backend.dto.user;
+package kuit3.backend.dto.restaurant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLoginResponse {
-
-    private String jwt;
-
+public class RestaurantStatusRequest {
+    private String status;
 }

@@ -1,13 +1,12 @@
 package kuit3.backend.common.interceptor;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import kuit3.backend.common.exception.jwt.unauthorized.JwtExpiredTokenException;
-import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtNoTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtExpiredTokenException;
+import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import kuit3.backend.jwt.JwtProvider;
-import kuit3.backend.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -24,10 +23,10 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
-    private final AuthService authService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        log.info("[JwtAuthInterceptor.preHandle]");
 
         String accessToken = resolveAccessToken(request);
         validateAccessToken(accessToken);
@@ -35,18 +34,17 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         String email = jwtProvider.getPrincipal(accessToken);
         validatePayload(email);
 
-        long userId = authService.getUserIdByEmail(email);
-        request.setAttribute("userId", userId);
+        request.setAttribute("userid", 1);
         return true;
     }
 
-    private String resolveAccessToken(HttpServletRequest request) {
+    public String resolveAccessToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         validateToken(token);
         return token.substring(JWT_TOKEN_PREFIX.length());
     }
 
-    private void validateToken(String token) {
+    public void validateToken(String token) {
         if (token == null) {
             throw new JwtNoTokenException(TOKEN_NOT_FOUND);
         }
@@ -55,16 +53,19 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void validateAccessToken(String accessToken) {
+    public void validateAccessToken(String accessToken) {
         if (jwtProvider.isExpiredToken(accessToken)) {
             throw new JwtExpiredTokenException(EXPIRED_TOKEN);
         }
     }
 
-    private void validatePayload(String email) {
+    public void validatePayload(String email) {
         if (email == null) {
             throw new JwtInvalidTokenException(INVALID_TOKEN);
         }
     }
 
+    public String getEmail(String accessToken) {
+        return jwtProvider.getPrincipal(accessToken);
+    }
 }
