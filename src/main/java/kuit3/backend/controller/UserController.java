@@ -1,5 +1,6 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.PreAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
@@ -38,8 +39,8 @@ public class UserController {
     /**
      * 회원 휴면
      */
-    @PatchMapping("/{userId}/dormant")
-    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId) {
+    @PatchMapping("/dormant")
+    public BaseResponse<Object> modifyUserStatus_dormant(@PreAuthorize long userId) {
         userService.modifyUserStatus_dormant(userId);
         return new BaseResponse<>(null);
     }
@@ -47,8 +48,8 @@ public class UserController {
     /**
      * 회원 탈퇴
      */
-    @PatchMapping("/{userId}/deleted")
-    public BaseResponse<Object> modifyUserStatus_deleted(@PathVariable long userId) {
+    @PatchMapping("/deleted")
+    public BaseResponse<Object> modifyUserStatus_deleted(@PreAuthorize long userId) {
         userService.modifyUserStatus_deleted(userId);
         return new BaseResponse<>(null);
     }
@@ -56,8 +57,8 @@ public class UserController {
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable long userId,
+    @PatchMapping("/nickname")
+    public BaseResponse<String> modifyNickname(@PreAuthorize long userId,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
@@ -81,8 +82,8 @@ public class UserController {
     }
 
     // 유저가 주문한 모든 주문 내역 가져오기
-    @GetMapping("/{userId}/orders")
-    public BaseResponse<List<UserOrdersResponse>> getOrders(@PathVariable Long userId,
+    @GetMapping("/orders")
+    public BaseResponse<List<UserOrdersResponse>> getOrders(@PreAuthorize Long userId,
                                                             @RequestParam(required = false, defaultValue = "0") int page){
 
         return new BaseResponse<>(userService.getOrders(userId,page));
@@ -90,8 +91,8 @@ public class UserController {
 
 
     // 주소 추가하기
-    @PostMapping("/{userId}/address")
-    public BaseResponse<String> createAddress(@PathVariable String userId,
+    @PostMapping("/address")
+    public BaseResponse<String> createAddress(@PreAuthorize String userId,
                                               @Validated @RequestBody UserAddressRequest userAddressRequest, BindingResult bindingResult ){
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
