@@ -1,6 +1,7 @@
 package kuit3.backend.dao;
 
 import kuit3.backend.dto.order.GetOrderResponse;
+import kuit3.backend.dto.order.GetOrdersResponse;
 import kuit3.backend.dto.user.GetUserResponse;
 import kuit3.backend.dto.user.PostUserRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -39,24 +40,33 @@ public class OrderDao {
 //        return Objects.requireNonNull(keyHolder.getKey()).longValue();
 //    }
 
-    public List<GetOrderResponse> getOrdersByUserId(long userId, long lastSeenId) {
+    public GetOrdersResponse getOrdersByUserId(long userId, long lastSeenId, int limit) {
         String sql = "select status, store_id, user_id from orders " +
                 "where user_id like :user_id" +
                 "and id < :last_seen_id" +
                 "order by id desc" +
-                "limit :limit";
+                "limit :limit_plus_one";
 
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("user_id", userId);
         param.addValue("last_seen_id", lastSeenId);
-        param.addValue("limit", 100);
+        param.addValue("limit_plus_one", limit + 1); // 하나 더 조회요청
 
-        return jdbcTemplate.query(sql, param,
+        List<GetOrderResponse> orders = jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetOrderResponse(
                         rs.getString("status"),
                         rs.getLong("store_id"),
                         rs.getLong("user_id"))
         );
+
+        boolean hasNext = false;
+
+        if (orders.size() > limit) { // 요청한대로 하나 더 조회됐으면 다음 내용 존재
+            orders.remove(orders.size() - 1); // 실제 반환은 요청한 개수 맞춰서 하나 삭제
+            hasNext = true;
+        }
+
+        return new GetOrdersResponse(orders, hasNext);
     }
 
     public int modifyOrderStatus_canceled(long orderId) {

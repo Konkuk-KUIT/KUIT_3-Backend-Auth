@@ -4,6 +4,7 @@ import kuit3.backend.common.argument_resolver.PreAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.order.GetOrderResponse;
+import kuit3.backend.dto.order.GetOrdersResponse;
 import kuit3.backend.dto.user.*;
 import kuit3.backend.service.OrderService;
 import kuit3.backend.service.UserService;
@@ -31,8 +32,8 @@ public class OrderController {
      * 특정 회원의 주문 목록 조회
      */
     @GetMapping("/my") //non-offset paging
-    public BaseResponse<List<GetOrderResponse>> getOrdersOfLoggedInUser(@PreAuthorize Long userId,
-                                                                        @RequestParam int lastSeenId) {
+    public BaseResponse<GetOrdersResponse> getOrdersOfLoggedInUser(@PreAuthorize Long userId,
+                                                                   @RequestParam int lastSeenId) {
         return new BaseResponse<>(orderService.getOrdersByUserId(userId, lastSeenId));
     }
 }
