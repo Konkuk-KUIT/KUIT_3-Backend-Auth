@@ -84,4 +84,21 @@ public class UserService {
             throw new UserException(DUPLICATE_NICKNAME);
         }
     }
+    public void modifyPassword(long userId, String password) {
+        log.info("[UserService.modifyPassword]");
+
+        if(validatePassword(password)){
+            throw new UserException(INVALID_PASSWORD,"password가 유효하지 않습니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(password);
+
+        int affectedRows = userDao.modifyPassword(userId, encodedPassword);
+        if (affectedRows != 1) {
+            throw new DatabaseException(DATABASE_ERROR);
+        }
+    }
+    private boolean validatePassword(String password) {
+        return password.matches("^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,}$");
+    }
 }

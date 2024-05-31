@@ -1,5 +1,6 @@
 package kuit3.backend.controller;
 
+import kuit3.backend.common.argument_resolver.PreAuthorize;
 import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
@@ -56,13 +57,26 @@ public class UserController {
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable long userId,
+    @PatchMapping("/nickname")
+    public BaseResponse<String> modifyNickname(@PreAuthorize long userId,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         userService.modifyNickname(userId, patchNicknameRequest.getNickname());
+        return new BaseResponse<>(null);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @PatchMapping("/password")
+    public BaseResponse<String> modifyPassword(@PreAuthorize long userId,
+                                               @Validated @RequestBody PatchPasswordRequest patchPasswordRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
+        }
+        userService.modifyPassword(userId, patchPasswordRequest.getPassword());
         return new BaseResponse<>(null);
     }
 
