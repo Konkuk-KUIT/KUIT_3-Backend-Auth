@@ -40,11 +40,8 @@ public class UserController {
     /**
      * 회원 휴면
      */
-    @PatchMapping("/{userId}/dormant")
-    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId, @PreAuthorize Long jwtId) {
-        if(userId != jwtId) {
-            throw new JwtUnauthorizedTokenException(TOKEN_MISMATCH);
-        }
+    @PatchMapping("/dormant")
+    public BaseResponse<Object> modifyUserStatus_dormant(@PreAuthorize Long userId) {
         userService.modifyUserStatus_dormant(userId);
         return new BaseResponse<>(null);
     }
@@ -52,8 +49,8 @@ public class UserController {
     /**
      * 회원 탈퇴
      */
-    @PatchMapping("/{userId}/deleted")
-    public BaseResponse<Object> modifyUserStatus_deleted(@PathVariable long userId) {
+    @PatchMapping("/deleted")
+    public BaseResponse<Object> modifyUserStatus_deleted(@PreAuthorize long userId) {
         userService.modifyUserStatus_deleted(userId);
         return new BaseResponse<>(null);
     }
@@ -61,8 +58,8 @@ public class UserController {
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable long userId,
+    @PatchMapping("/nickname")
+    public BaseResponse<String> modifyNickname(@PreAuthorize long userId,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));

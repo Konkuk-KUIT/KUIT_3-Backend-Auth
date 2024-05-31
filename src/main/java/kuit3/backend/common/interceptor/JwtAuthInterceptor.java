@@ -8,6 +8,7 @@ import kuit3.backend.common.exception.jwt.bad_request.JwtNoTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import kuit3.backend.jwt.JwtProvider;
 import kuit3.backend.service.AuthService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -27,16 +28,11 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private final AuthService authService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         String accessToken = resolveAccessToken(request);
         validateAccessToken(accessToken);
+        request.setAttribute("jwtToken", accessToken);
 
-        String email = jwtProvider.getPrincipal(accessToken);
-        validatePayload(email);
-
-        long userId = authService.getUserIdByEmail(email);
-        request.setAttribute("userId", userId);
         return true;
     }
 
@@ -58,12 +54,6 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private void validateAccessToken(String accessToken) {
         if (jwtProvider.isExpiredToken(accessToken)) {
             throw new JwtExpiredTokenException(EXPIRED_TOKEN);
-        }
-    }
-
-    private void validatePayload(String email) {
-        if (email == null) {
-            throw new JwtInvalidTokenException(INVALID_TOKEN);
         }
     }
 
