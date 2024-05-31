@@ -6,6 +6,7 @@ import kuit3.backend.dto.user.PostUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,12 +39,17 @@ public class OrderDao {
 //        return Objects.requireNonNull(keyHolder.getKey()).longValue();
 //    }
 
-    public List<GetOrderResponse> getOrdersByUserId(long userId) {
+    public List<GetOrderResponse> getOrdersByUserId(long userId, long lastSeenId) {
         String sql = "select status, store_id, user_id from orders " +
-                "where user_id like :user_id";
+                "where user_id like :user_id" +
+                "and id < :last_seen_id" +
+                "order by id desc" +
+                "limit :limit";
 
-        Map<String, Object> param = Map.of(
-                "user_id", "%" + userId + "%");
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("user_id", userId);
+        param.addValue("last_seen_id", lastSeenId);
+        param.addValue("limit", 100);
 
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetOrderResponse(

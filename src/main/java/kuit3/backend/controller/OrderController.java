@@ -30,8 +30,9 @@ public class OrderController {
     /**
      * 특정 회원의 주문 목록 조회
      */
-    @GetMapping("/my")
-    public BaseResponse<List<GetOrderResponse>> getOrdersOfLoggedInUser(@PreAuthorize Long userId) {
-        return new BaseResponse<>(orderService.getOrdersByUserId(userId));
+    @GetMapping("/my") //non-offset paging
+    public BaseResponse<List<GetOrderResponse>> getOrdersOfLoggedInUser(@PreAuthorize Long userId,
+                                                                        @RequestParam int lastSeenId) {
+        return new BaseResponse<>(orderService.getOrdersByUserId(userId, lastSeenId));
     }
 }
