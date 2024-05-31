@@ -17,22 +17,11 @@ public class WebConfig implements WebMvcConfigurer {
     private final JwtAuthInterceptor jwtAuthenticationInterceptor;
     private final JwtAuthHandlerArgumentResolver jwtAuthHandlerArgumentResolver;
 
-    private String[] includePathPatterns = {
-            "",
-            ""
-    };
-
-    private String[] excludePathPatterns = {
-            "",
-            ""
-    };
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
-                .addPathPatterns(includePathPatterns)
-                .excludePathPatterns(excludePathPatterns);
+                .addPathPatterns("/auth/test");
     }
 
     @Override
