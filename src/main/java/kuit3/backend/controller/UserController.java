@@ -57,8 +57,8 @@ public class UserController {
     /**
      * 닉네임 변경
      */
-    @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable @PreAuthorize long userId,
+    @PatchMapping("/nickname")
+    public BaseResponse<String> modifyNickname(@PreAuthorize long userId,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));

@@ -26,6 +26,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private final JwtProvider jwtProvider;
     private final AuthService authService;
 
+    // 컨트롤러 호출전에 JWT 검증
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
