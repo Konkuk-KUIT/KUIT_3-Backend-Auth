@@ -2,6 +2,7 @@ package kuit3.backend.controller;
 
 
 import kuit3.backend.common.exception.RestaurantException;
+import kuit3.backend.common.exception.UserException;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.restaurants.GetRestaurantResponse;
 import kuit3.backend.dto.restaurants.PostRestaurantRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.*;
+import static kuit3.backend.util.BindingResultUtils.getErrorMessages;
 
 
 @Slf4j
@@ -57,4 +59,5 @@ public class RestaurantController {
         }
         return new BaseResponse<>(restaurantService.newRestaurant(postRestaurantRequest));
     }
+
 }

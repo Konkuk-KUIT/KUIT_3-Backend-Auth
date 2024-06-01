@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostRestaurantResponse {
 
-    private long userId;
+    private long storeId;
 }
