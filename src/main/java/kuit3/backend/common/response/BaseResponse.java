@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.SUCCESS;
 
+
 @Getter
 @JsonPropertyOrder({"code", "status", "message", "result"})
 public class BaseResponse<T> implements ResponseStatus {
