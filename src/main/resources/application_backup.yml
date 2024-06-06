@@ -1,6 +1,5 @@
 spring:
   profiles:
-    active: local
     group:
       "local": "localDB, devPort, secret, web-mvc"
       "dev": "devDB, devPort, secret, web-mvc"
@@ -14,9 +13,9 @@ spring:
       on-profile: "localDB"
 
   datasource:
-    url: application.yml
-    username: kuit
-    password:
+    url: ${DATASOURCE_URL_LOCAL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     dbcp2:
       validation-query: select 1
@@ -94,8 +93,8 @@ spring:
       on-profile: "secret"
 
 secret:
-  jwt-secret-key: q8ZlTY3McB2+H1g7Tb2Y/h5jNTpVZ5u/bglWb0Otbh4=
-  jwt-expired-in: 36000000
+  jwt-secret-key: ${JWT_SECRET_KEY}
+  jwt-expired-in: ${JWT_EXPIRED_IN}
 
 ---
 
