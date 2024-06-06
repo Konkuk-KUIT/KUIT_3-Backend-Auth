@@ -19,6 +19,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     dbcp2:
       validation-query: select 1
+  jpa:
+    hibernate:
+    ddl-auto: create
+
   sql:
     init:
       platform: mysql
