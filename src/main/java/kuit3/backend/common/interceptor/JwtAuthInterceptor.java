@@ -7,6 +7,7 @@ import kuit3.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtNoTokenException;
 import kuit3.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import kuit3.backend.jwt.JwtProvider;
+import kuit3.backend.jwt.JwtUtil;
 import kuit3.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,47 +25,48 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
     private final AuthService authService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
-        String accessToken = resolveAccessToken(request);
-        validateAccessToken(accessToken);
+        String accessToken = jwtUtil.resolveAccessToken(request);
+        jwtUtil.validateAccessToken(accessToken);
 
         String email = jwtProvider.getPrincipal(accessToken);
-        validatePayload(email);
+        jwtUtil.validatePayload(email);
 
         long userId = authService.getUserIdByEmail(email);
         request.setAttribute("userId", userId);
         return true;
     }
 
-    private String resolveAccessToken(HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        validateToken(token);
-        return token.substring(JWT_TOKEN_PREFIX.length());
-    }
-
-    private void validateToken(String token) {
-        if (token == null) {
-            throw new JwtNoTokenException(TOKEN_NOT_FOUND);
-        }
-        if (!token.startsWith(JWT_TOKEN_PREFIX)) {
-            throw new JwtUnsupportedTokenException(UNSUPPORTED_TOKEN_TYPE);
-        }
-    }
-
-    private void validateAccessToken(String accessToken) {
-        if (jwtProvider.isExpiredToken(accessToken)) {
-            throw new JwtExpiredTokenException(EXPIRED_TOKEN);
-        }
-    }
-
-    private void validatePayload(String email) {
-        if (email == null) {
-            throw new JwtInvalidTokenException(INVALID_TOKEN);
-        }
-    }
+//    private String resolveAccessToken(HttpServletRequest request) {
+//        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        validateToken(token);
+//        return token.substring(JWT_TOKEN_PREFIX.length());
+//    }
+//
+//    private void validateToken(String token) {
+//        if (token == null) {
+//            throw new JwtNoTokenException(TOKEN_NOT_FOUND);
+//        }
+//        if (!token.startsWith(JWT_TOKEN_PREFIX)) {
+//            throw new JwtUnsupportedTokenException(UNSUPPORTED_TOKEN_TYPE);
+//        }
+//    }
+//
+//    private void validateAccessToken(String accessToken) {
+//        if (jwtProvider.isExpiredToken(accessToken)) {
+//            throw new JwtExpiredTokenException(EXPIRED_TOKEN);
+//        }
+//    }
+//
+//    private void validatePayload(String email) {
+//        if (email == null) {
+//            throw new JwtInvalidTokenException(INVALID_TOKEN);
+//        }
+//    }
 
 }

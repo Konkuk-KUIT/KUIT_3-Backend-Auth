@@ -1,19 +1,25 @@
 package kuit3.backend.controller;
 
+import jakarta.validation.constraints.NotNull;
+import kuit3.backend.common.argument_resolver.JwtAuthrize;
+import kuit3.backend.common.exception.BadRequestException;
 import kuit3.backend.common.exception.UserException;
+import kuit3.backend.common.response.BaseErrorResponse;
 import kuit3.backend.common.response.BaseResponse;
 import kuit3.backend.dto.user.*;
+import kuit3.backend.dto.user.address.GetUserAddressResponse;
+import kuit3.backend.dto.user.address.PostUserAddressRequest;
 import kuit3.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_STATUS;
-import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
+import static kuit3.backend.common.response.status.BaseExceptionResponseStatus.*;
 import static kuit3.backend.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
@@ -39,7 +45,7 @@ public class UserController {
      * 회원 휴면
      */
     @PatchMapping("/{userId}/dormant")
-    public BaseResponse<Object> modifyUserStatus_dormant(@PathVariable long userId) {
+    public BaseResponse<Object> modifyUserStatus_dormant(@NotNull @JwtAuthrize long userId) {
         userService.modifyUserStatus_dormant(userId);
         return new BaseResponse<>(null);
     }
@@ -48,7 +54,7 @@ public class UserController {
      * 회원 탈퇴
      */
     @PatchMapping("/{userId}/deleted")
-    public BaseResponse<Object> modifyUserStatus_deleted(@PathVariable long userId) {
+    public BaseResponse<Object> modifyUserStatus_deleted(@NotNull @JwtAuthrize long userId) {
         userService.modifyUserStatus_deleted(userId);
         return new BaseResponse<>(null);
     }
@@ -57,7 +63,7 @@ public class UserController {
      * 닉네임 변경
      */
     @PatchMapping("/{userId}/nickname")
-    public BaseResponse<String> modifyNickname(@PathVariable long userId,
+    public BaseResponse<String> modifyNickname(@NotNull @JwtAuthrize long userId,
                                                @Validated @RequestBody PatchNicknameRequest patchNicknameRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
@@ -74,9 +80,29 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "") String nickname,
             @RequestParam(required = false, defaultValue = "") String email,
             @RequestParam(required = false, defaultValue = "active") String status) {
+        log.info("[UserController.getUsers]");
         if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
             throw new UserException(INVALID_USER_STATUS);
         }
         return new BaseResponse<>(userService.getUsers(nickname, email, status));
+    }
+
+    @PostMapping("/address")
+    public BaseResponse<Object> addUserAddress
+            (@NotNull @JwtAuthrize long userId , @Validated @RequestBody PostUserAddressRequest postUserAddressRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            throw new UserException(INVALID_ADDRESS_INPUT, getErrorMessages(bindingResult));
+        }
+        postUserAddressRequest.setUserId(userId);
+        userService.addUserAddress(postUserAddressRequest);
+        return new BaseResponse<>(null);
+    }
+
+    @GetMapping("/address/{userId}")
+    public BaseResponse<List<GetUserAddressResponse>> getUserAddress(/*@Validated @NotNull*/ @PathVariable("userId") long AskUserId,@RequestAttribute("userId") Long AuthUserId){
+        if (AskUserId != AuthUserId) {
+            throw new BadRequestException(INVALID_USER_STATUS);
+        }
+        return new BaseResponse<>(userService.getUserAddress(AskUserId));
     }
 }
